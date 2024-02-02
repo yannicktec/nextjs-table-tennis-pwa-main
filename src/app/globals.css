@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+}
+
+
+.bg-gold {
+  background-color: #ffd700; /* gold */
+}
+
+.bg-silver {
+  background-color: #c0c0c0; /* silver */
+}
+
+.bg-bronze {
+  background-color: #cd7f32; /* bronze */
+}
+
+.bg-gray-200 {
+  background-color: #e5e7eb; /* light gray */
+}
+
+.bg-prm-blue {
+  background-color: #14417C;
+}
+
+
+
+
+.shadow {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-lg {
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 640px) {
+  .modal-responsive {
+    width: 90%;
+  }
+}
+
+@media (min-width: 641px) {
+  .modal-responsive {
+    width: 400px; /* Fixed width for larger screens */
+  }
+}
