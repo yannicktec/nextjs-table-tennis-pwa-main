@@ -1,65 +1,50 @@
 "use client";
-import Link from "next/link";
-import { FormEvent } from "react";
-import PlayerForm from "./PlayerForm";
-import { postNewPlayer } from "../../../utils/supabase";
-import { ToastContainer, toast } from "react-toastify";
 
+import { useFormStatus } from "react-dom";
+
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ChevronLeft } from "lucide-react"
+
+import { addPlayer } from "./actions/addPlayer";
+import { Label } from "@radix-ui/react-label";
 
 export default function Page() {
+  const addPlayerActionWithDefaultUser = addPlayer.bind(null, 1)
+  const { pending } = useFormStatus()
+
+
   return (
-    <div className="container mx-auto mt-8 p-4 bg-gray-100 rounded-md">
-      <div className="absolute top-11 left-8">
-        <Link
-          href="/"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </Link>
+    <div className=" h-screen w-screen p-4 bg-gray-100 flex flex-col items-center">
+      <div className="flex justify-between w-full flex-wrap">
+        <Button variant="link" asChild className="p-0 m-0">
+          <Link href="/" ><ChevronLeft />zurück</Link>
+        </Button>
+        <h1 className="text-3xl font-bold ">Neuen Spieler hinzufügen</h1>
+        <div />
       </div>
-      <h1 className="text-3xl font-bold mb-4 text-center">Neuer Spieler</h1>
-      <PlayerForm
-        onSubmit={(playerName, emoji) =>
-          postNewPlayer(playerName, emoji)
-            .then(() =>
-              toast.success(playerName + emoji + " erfolgreich hinzugefügt", {
-                position: "bottom-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "colored",
-              })
-            )
-            .catch((e) =>
-              toast.error("Fehler:" + e, {
-                position: "bottom-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "colored",
-              })
-            )
+      <form action={addPlayerActionWithDefaultUser} className="flex flex-col justify-between mt-16 w-full h-full max-w-xl max-h-64  space-y-2">
+        <div className="flex flex-wrap space-x-4">
+          <div className="flex-1 ">
+            <Label htmlFor='name'>Name</Label>
+            <Input type='text' name='name' required />
+          </div>
+          <div className="w-24 ">
+            <Label htmlFor='emoji'>Emoji</Label>
+            <Input type="text" name='emoji' required />
+
+          </div>
+        </div>
+
+        {pending ?
+          <Button disabled></Button> :
+          <Button type='submit'>
+            Submit
+          </Button>
         }
-      />
-      <ToastContainer />
+      </form>
+
     </div>
   );
 }

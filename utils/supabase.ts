@@ -1,4 +1,4 @@
-import { Player } from "@/app/game/playerGrid";
+import { Player } from "@/app/game/components/playerGrid";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(

@@ -1,16 +1,17 @@
 "use client";
 
-import { Key, useState } from "react";
+import addMatch from "../actions/addMatch";
+import { useState } from "react";
+
 import PlayerTile from "./playerTile";
+import { ToastAction } from "@radix-ui/react-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { ConfirmationModal } from "./confirmationModal";
-import { updatePlayerWins } from "../../../utils/supabase";
-import { ToastContainer, toast } from "react-toastify";
 
 export interface Player {
-  id: React.Key;
+  id: number;
   name: string;
-  emoji: string;
-  wins: number;
+  emoji: string | null;
 }
 
 interface PlayerGridProps {
@@ -18,6 +19,7 @@ interface PlayerGridProps {
 }
 
 export default function PlayerGrid({ players }: PlayerGridProps) {
+  const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
 
@@ -29,44 +31,30 @@ export default function PlayerGrid({ players }: PlayerGridProps) {
   const handleConfirm = () => {
     if (selectedPlayer) {
       console.log(selectedPlayer.id, " wurde ausgewählt");
-    }
-    updatePlayerWins(selectedPlayer!)
-      .then(() => setIsModalOpen(false))
-      .then(() =>
-      toast.success("erfolgreich eingetragen", {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      })
-      )
-      .catch((e) =>
-        toast.error("Fehler:" + e, {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
+      addMatch({ winnerId: selectedPlayer.id, loserId: 1 }).then(() => {
+        toast({ title: "Match hinzugefügt", duration: 5000, description: ` ${selectedPlayer.name} wurde als Sieger eintragen`, variant: "default" })
+        setSelectedPlayer(null);
+        setIsModalOpen(false);
+      }).catch((error) => {
+        toast({
+          title: "Fehler!",
+          description: `Wer hat denn diese Scheiße programmiert?`,
+          action: <ToastAction altText="Erneut veruschen"><button onClick={handleConfirm}>Erneut versuchen</button></ToastAction>
         })
-      );
+      });
+    }
+
   };
 
   return (
     <>
-      <div className="flex justify-center min-h-screen">
+      <div className="flex justify-center ">
         <div className="flex flex-wrap gap-10 justify-center">
           {players.map((player) => (
             <PlayerTile
               key={player.id}
               name={player.name}
-              emoji={player.emoji}
+              emoji={player.emoji || "👾"}
               onClick={() => handlePlayerClick(player)}
             />
           ))}
@@ -80,7 +68,7 @@ export default function PlayerGrid({ players }: PlayerGridProps) {
           />
         )}
       </div>
-      
+
     </>
   );
 }
