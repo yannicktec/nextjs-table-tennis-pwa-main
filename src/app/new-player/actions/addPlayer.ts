@@ -13,7 +13,7 @@ const inputSchema = z.object({
     emoji: z.string().emoji({ message: "Emoji is required" }),
 });
 
-export async function addPlayer(userId = 1, formData: FormData) {
+export async function addPlayer(formData: FormData) {
     const { name, emoji } = inputSchema.parse({ name: formData.get("name"), emoji: formData.get("emoji") });
 
     // create the connection
@@ -28,7 +28,7 @@ export async function addPlayer(userId = 1, formData: FormData) {
         name: name,
         emoji: emoji,
         createdAt: new Date(),
-        createdBy: userId,
+        createdBy: 1,
     }).execute();
 
     redirect("/game")

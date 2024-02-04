@@ -10,7 +10,7 @@ export default function Home() {
       </h1>
       <div className="flex flex-col items-center space-y-4">
         <Button asChild size="lg" className="w-full">
-          <Link href="/game" >🏓 Ergebnis eintragen</Link>
+          <Link href="/game" >🏓 Spiel eintragen</Link>
         </Button>
         <Button asChild variant="secondary" className="w-full">
           <Link href="/new-player" >Neuen Spieler eintragen</Link>
