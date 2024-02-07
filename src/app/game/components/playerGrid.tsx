@@ -12,13 +12,14 @@ export interface Player {
   id: number;
   name: string;
   emoji: string | null;
+  priority: number;
 }
 
 interface PlayerGridProps {
   players: Player[];
 }
 
-export default function PlayerGrid({ players }: PlayerGridProps) {
+export default function PlayerGrid({ players }: Readonly<PlayerGridProps>) {
   const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
@@ -47,28 +48,25 @@ export default function PlayerGrid({ players }: PlayerGridProps) {
   };
 
   return (
-    <>
-      <div className="flex justify-center ">
-        <div className="flex flex-wrap gap-10 justify-center">
-          {players.map((player) => (
-            <PlayerTile
-              key={player.id}
-              name={player.name}
-              emoji={player.emoji || "👾"}
-              onClick={() => handlePlayerClick(player)}
-            />
-          ))}
-        </div>
-        {selectedPlayer && (
-          <ConfirmationModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onConfirm={handleConfirm}
-            playerName={selectedPlayer.name}
+    <div className="flex justify-center ">
+      <div className="flex flex-wrap gap-10 justify-center">
+        {players.toSorted((a, b) => b.priority - a.priority).map((player) => (
+          <PlayerTile
+            key={player.id}
+            name={player.name}
+            emoji={player.emoji || "👾"}
+            onClick={() => handlePlayerClick(player)}
           />
-        )}
+        ))}
       </div>
-
-    </>
+      {selectedPlayer && (
+        <ConfirmationModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleConfirm}
+          playerName={selectedPlayer.name}
+        />
+      )}
+    </div>
   );
 }

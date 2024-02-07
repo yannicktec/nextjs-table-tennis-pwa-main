@@ -16,7 +16,7 @@ export default function Home() {
           <Link href="/new-player" >Neuen Spieler eintragen</Link>
         </Button>
         <Button asChild variant="secondary" className="w-full">
-          <Link href="/dashboard" >Leaderboard</Link>
+          <Link href="/scoreboard" >Leaderboard</Link>
         </Button>
 
       </div>

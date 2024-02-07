@@ -31,11 +31,6 @@ export default async function addMatch({ winnerId, loserId }: { winnerId: number
                 match: matchId,
                 player: winnerId,
             }).execute();
-            await tx.insert(schema.playerMatches).values({
-                type: "LOST",
-                match: matchId,
-                player: loserId,
-            }).execute();
         })
 
         revalidatePath("/game")

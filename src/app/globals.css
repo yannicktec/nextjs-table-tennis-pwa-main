@@ -74,3 +74,21 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+
+.bg-gold {
+  background-color: #ffd700; /* gold */
+}
+
+.bg-silver {
+  background-color: #c0c0c0; /* silver */
+}
+
+.bg-bronze {
+  background-color: #cd7f32; /* bronze */
+}
+
+.bg-gray-200 {
+  background-color: #e5e7eb; /* light gray */
+}
