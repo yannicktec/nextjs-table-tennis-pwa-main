@@ -22,7 +22,7 @@ export const players = mysqlTable("players", {
   createdAt: datetime("createdAt").notNull(),
   createdBy: int("createdBy").notNull(),
   rating: int("rating"),
-  priority: int("priority").default(9999),
+  priority: int("priority").notNull().default(9999),
   
 });
 

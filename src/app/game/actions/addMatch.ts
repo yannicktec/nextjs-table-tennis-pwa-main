@@ -18,11 +18,11 @@ export default async function addMatch({ winnerId, loserId }: { winnerId: number
         });
 
         const db = drizzle(connection, { schema });
-
+        const date = new Date();
         // Insert the match and the playerMatches as a transaction to ensure consistency
         await db.transaction(async tx => {
             const { insertId } = await tx.insert(schema.matches).values({
-                createdAt: new Date(),
+                createdAt: new Date(date.getFullYear(), date.getMonth() -1 , 15),
                 enteredBy: 1,
             }).execute();
             const matchId = Number.parseInt(insertId);
