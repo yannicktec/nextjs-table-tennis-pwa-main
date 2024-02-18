@@ -1,55 +1,14 @@
-import * as schema from "@/db/schema"
-import Link from "next/link";
-import { drizzle } from "drizzle-orm/planetscale-serverless";
-import { connect } from "@planetscale/database";
-import { and, count, eq, gt, lt } from "drizzle-orm";
 
-type Players = {
-  name: string;
-  id: number;
-  wins: number;
-  emoji: string;
-  priority: string;
-  createdAt: Date;
-};
+import Link from "next/link";
+import { getCurrentMonthResult } from "@/db/getCurrentMonthResult";
+
 
 export default async function ScoreBoard() {
-  // create the db connection
-  const connection = connect({
-    host: process.env.DATABASE_HOST,
-    username: process.env.DATABASE_USERNAME,
-    password: process.env.DATABASE_PASSWORD,
-  });
+  const thisMonthResult = await getCurrentMonthResult()
 
-  const db = drizzle(connection, { schema });
+  const firstThreePlayers = thisMonthResult.slice(0, 3);
+  const restOfPlayers = thisMonthResult.slice(3);
 
-  const date = new Date()
-
-  var firstDayOfThisMonth = new Date(date.getFullYear(), date.getMonth(), 1);
-  var lastDayOfThisMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-
-  // get all players and their won matches
-  const matchesResult = await db
-    .select({
-      id: schema.players.id,
-      name: schema.players.name,
-      emoji: schema.players.emoji,
-      wins: count(schema.playerMatches.id)
-    })
-    .from(schema.players)
-    .leftJoin(schema.playerMatches, eq(schema.players.id, schema.playerMatches.player))
-    .leftJoin(schema.matches, eq(schema.playerMatches.match, schema.matches.id))
-    .where(
-      and(
-        eq(schema.playerMatches.type, "WON"),
-        gt(schema.matches.createdAt, firstDayOfThisMonth),
-        lt(schema.matches.createdAt, lastDayOfThisMonth)
-      )
-    )
-    .groupBy(schema.players.id)
-  const matchesInOrder = matchesResult.reverse()
-  const firstThreePlayers = matchesResult.slice(0, 3);
-  const restOfPlayers = matchesResult.slice(3);
 
   return (
     <main>

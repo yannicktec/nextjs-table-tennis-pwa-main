@@ -1,15 +1,10 @@
 "use server"
-import "dotenv/config";
-import { connect } from "@planetscale/database";
-import { drizzle } from "drizzle-orm/planetscale-serverless";
-import * as schema from "@/db/schema";
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react"
 
 import NewPlayerForm from "./components/newPlayerForm";
-import { redirect } from "next/navigation";
 
 export default async function Page() {
   "use server"

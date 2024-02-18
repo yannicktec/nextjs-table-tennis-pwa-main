@@ -29,6 +29,8 @@ export default function PlayerGrid({ players }: Readonly<PlayerGridProps>) {
     setIsModalOpen(true);
   };
 
+
+
   const handleConfirm = () => {
     if (selectedPlayer) {
       console.log(selectedPlayer.id, " wurde ausgewählt");

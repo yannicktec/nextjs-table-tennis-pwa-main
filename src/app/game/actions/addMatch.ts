@@ -22,7 +22,7 @@ export default async function addMatch({ winnerId, loserId }: { winnerId: number
         // Insert the match and the playerMatches as a transaction to ensure consistency
         await db.transaction(async tx => {
             const { insertId } = await tx.insert(schema.matches).values({
-                createdAt: new Date(date.getFullYear(), date.getMonth() -1 , 15),
+                createdAt: new Date(),
                 enteredBy: 1,
             }).execute();
             const matchId = Number.parseInt(insertId);

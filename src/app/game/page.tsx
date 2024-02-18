@@ -33,6 +33,5 @@ export default async function Game() {
       <h1 className="text-3xl font-bold mb-4 text-center">Spiel</h1>
       <PlayerGrid players={players} />
     </main>
-
   );
 }
