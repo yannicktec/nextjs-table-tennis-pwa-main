@@ -87,5 +87,5 @@ export const getCurrentMonthResult = async () => {
         }
     })
 
-    return thisMonthPlayerWins
+    return thisMonthResult
 }
