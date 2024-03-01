@@ -1,73 +1,37 @@
-"use client"
-import { PostgrestError, createClient } from "@supabase/supabase-js";
-import PlayerTile from "./playerTile";
-import PlayerGrid from "./playerGrid";
+"use server"
+import PlayerGrid from "./components/playerGrid";
 import Link from "next/link";
-import supabase from "../../../utils/supabase";
-import { useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
-import { CircleLoader } from "react-spinners";
+import { drizzle } from "drizzle-orm/planetscale-serverless";
 
-type Players = {
-  name: string;
-  id: number;
-  wins: number;
-  emoji: string;
-  priority: string;
-  createdAt: Date;
-};
+import * as schema from "@/db/schema";
+import { connect } from "@planetscale/database";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 
-export default function Notes() {
-  const [players, setPlayers] = useState<Players[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<PostgrestError|null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("players")
-          .select()
-          .order("priority", { ascending: true });
+export default async function Game() {
 
-        if (error) throw error;
-        setPlayers(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setError(error as PostgrestError );
-      } finally {
-        setIsLoading(false);
-      }
-    };
 
-    fetchData();
-  }, []);
+  // create the connection
+  const connection = connect({
+    host: process.env.DATABASE_HOST,
+    username: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
+  });
 
-  if (isLoading) return <span>loading</span>;
-  if (error) return <span>Error: {error.message}</span>;
+  const db = drizzle(connection, { schema });
+
+  const players = await db.query.players.findMany()
+
   return (
-    <main className="container mx-auto mt-8 p-4 bg-gray-100 rounded-md"> <div className="absolute top-11 left-8">
-    <Link
-      href="/"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-6 w-6"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M15 19l-7-7 7-7"
-        />
-      </svg>
-    </Link>
-  </div>
-  <h1 className="text-3xl font-bold mb-4 text-center">Spiel</h1>{players ? <PlayerGrid players={players}/> : <span>Loading</span>}
-  <ToastContainer /></main>
-  
+    <main className="h-screen w-screen p-4 bg-gray-100 ">
+      <div className="w-full">
+        <Button variant="link" asChild className="p-0 m-0">
+          <Link href="/" ><ChevronLeft />zurück</Link>
+        </Button>
+      </div>
+      <h1 className="text-3xl font-bold mb-4 text-center">Spiel</h1>
+      <PlayerGrid players={players} />
+    </main>
   );
 }

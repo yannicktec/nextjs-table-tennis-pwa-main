@@ -1,6 +1,5 @@
 'use client';
 
-import { ToastContainer } from "react-toastify";
 
 export type PlayerTileProps = {
   name: string;
