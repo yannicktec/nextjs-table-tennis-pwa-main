@@ -1,26 +1,14 @@
 "use server"
 import PlayerGrid from "./components/playerGrid";
 import Link from "next/link";
-import { drizzle } from "drizzle-orm/planetscale-serverless";
-
-import * as schema from "@/db/schema";
-import { connect } from "@planetscale/database";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 
+import { getConnectedDBClient } from "@/db/TableTennisDrizzleClient";
 
 export default async function Game() {
 
-
-  // create the connection
-  const connection = connect({
-    host: process.env.DATABASE_HOST,
-    username: process.env.DATABASE_USERNAME,
-    password: process.env.DATABASE_PASSWORD,
-  });
-
-  const db = drizzle(connection, { schema });
-
+  const db = await getConnectedDBClient()
   const players = await db.query.players.findMany()
 
   return (

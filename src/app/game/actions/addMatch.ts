@@ -1,9 +1,8 @@
 "use server";
 
 
+import { getConnectedDBClient } from "@/db/TableTennisDrizzleClient";
 import * as schema from "@/db/schema";
-import { connect } from "@planetscale/database";
-import { drizzle } from "drizzle-orm/planetscale-serverless";
 import { revalidatePath } from "next/cache";
 
 export default async function addMatch({ winnerId, loserId }: { winnerId: number; loserId: number; }) {
@@ -11,21 +10,16 @@ export default async function addMatch({ winnerId, loserId }: { winnerId: number
 
     try {
         // Create a connection to the database
-        const connection = connect({
-            host: process.env.DATABASE_HOST,
-            username: process.env.DATABASE_USERNAME,
-            password: process.env.DATABASE_PASSWORD,
-        });
-
-        const db = drizzle(connection, { schema });
+        const db = await getConnectedDBClient()
         const date = new Date();
         // Insert the match and the playerMatches as a transaction to ensure consistency
         await db.transaction(async tx => {
-            const { insertId } = await tx.insert(schema.matches).values({
+            const results = await tx.insert(schema.matches).values({
                 createdAt: new Date(),
                 enteredBy: 1,
-            }).execute();
-            const matchId = Number.parseInt(insertId);
+            }).returning({ id: schema.matches.id });
+
+            const matchId = results[0].id
             await tx.insert(schema.playerMatches).values({
                 type: "WON",
                 match: matchId,

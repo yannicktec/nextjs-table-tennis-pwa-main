@@ -42,3 +42,9 @@ next-env.d.ts
 **/public/sw.js.map
 **/public/workbox-*.js.map
 **/public/worker-*.js.map
+
+# sst
+.sst
+
+# open-next
+.open-next

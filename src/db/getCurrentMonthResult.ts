@@ -1,21 +1,13 @@
 "use server"
 
 import * as schema from "@/db/schema"
-import { drizzle } from "drizzle-orm/planetscale-serverless";
-import { connect } from "@planetscale/database";
 import { and, count, desc, eq, gt, lt } from "drizzle-orm";
+import { getConnectedDBClient } from "./TableTennisDrizzleClient";
 
 
 export const getCurrentMonthResult = async () => {
     // create the db connection
-    const connection = connect({
-        host: process.env.DATABASE_HOST,
-        username: process.env.DATABASE_USERNAME,
-        password: process.env.DATABASE_PASSWORD,
-    });
-
-    const db = drizzle(connection, { schema });
-
+    const db = await getConnectedDBClient()
     const date = new Date()
 
     const firstDayOfThisMonth = new Date(date.getFullYear(), date.getMonth(), 1);

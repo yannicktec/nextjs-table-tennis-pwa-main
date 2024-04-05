@@ -1,36 +1,29 @@
-import { connect } from "@planetscale/database";
-import { drizzle } from "drizzle-orm/planetscale-serverless";
+
 
 import * as schema from "@/db/schema"
-import { and, eq, gt, lt, count, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { getCurrentMonthResult } from "@/db/getCurrentMonthResult";
+import { getConnectedDBClient } from "@/db/TableTennisDrizzleClient";
 
 export async function GET() {
-    const response = new NextResponse()
-
-    const connection = connect({
-        host: process.env.DATABASE_HOST,
-        username: process.env.DATABASE_USERNAME,
-        password: process.env.DATABASE_PASSWORD,
-    });
-
-    const db = drizzle(connection, { schema });
-
+    const db = await getConnectedDBClient()
 
 
     const playerWins = await getCurrentMonthResult()
-
+    console.log("trying to save following MonthResult:", playerWins)
     try {
+
         await db.transaction(async tx => {
-            const { insertId: monthResultId } = await tx.insert(schema.monthResult).values({
+
+            const res = await tx.insert(schema.monthResult).values({
                 createdAt: new Date(),
                 enteredBy: 1,
 
-            }).onDuplicateKeyUpdate({ set: { id: sql`id` } })
+            }).returning({ id: schema.monthResult.id })
+            const monthResultId = res[0].id
             console.log(`Inserted monthResultId: ${monthResultId}`)
             const dbInsertValues = playerWins.map(playerWin => ({
-                monthResult: Number.parseInt(monthResultId),
+                monthResult: monthResultId,
                 player: playerWin.id,
                 points: playerWin.wins,
             }))

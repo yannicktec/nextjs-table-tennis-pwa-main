@@ -1,6 +1,7 @@
-import { PlanetScaleDatabase, drizzle } from "drizzle-orm/planetscale-serverless";
-import { connect } from "@planetscale/database";
-import { and, count, eq, gt,  lt } from "drizzle-orm";
+
+import { RDSDataClient } from "@aws-sdk/client-rds-data";
+import { drizzle } from "drizzle-orm/aws-data-api/pg";
+import { and, count, eq, gt, lt } from "drizzle-orm";
 import * as schema from "@/db/schema";
 
 
@@ -9,22 +10,16 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ChevronLeft } from "lucide-react";
 import { Suspense } from "react";
+import { getConnectedDBClient } from "@/db/TableTennisDrizzleClient";
 
 export default async function Dashboard() {
 
-    // create the db connection
-    const connection = connect({
-        host: process.env.DATABASE_HOST,
-        username: process.env.DATABASE_USERNAME,
-        password: process.env.DATABASE_PASSWORD,
-    });
-
-    const db = drizzle(connection, { schema });
+    const db = await getConnectedDBClient()
 
     const date = new Date()
 
-    var firstDayOfThisMonth = new Date(date.getFullYear(), date.getMonth(), 1);
-    var lastDayOfThisMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    const firstDayOfThisMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+    const lastDayOfThisMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
 
     // get all players and their won matches
     const matchesResult = await db
@@ -45,7 +40,7 @@ export default async function Dashboard() {
             )
         )
         .groupBy(schema.players.id)
-    
+
     const monthFormatter = new Intl.DateTimeFormat('de', { month: 'long' });
     const monthText = monthFormatter.format(date);
 
@@ -74,17 +69,17 @@ export default async function Dashboard() {
                             <TableRow>
                                 <TableCell>Loading...</TableCell>
                             </TableRow>
-                        
+
                         }>
 
-                        {matchesResult.map((result, index) => (
-                            <TableRow key={result.id}>
-                                <TableCell>{index + 1}.</TableCell>
-                                <TableCell className="text-center">{result.emoji} {result.name}</TableCell>
-                                <TableCell>{result.wonMatches}</TableCell>
+                            {matchesResult.map((result, index) => (
+                                <TableRow key={result.id}>
+                                    <TableCell>{index + 1}.</TableCell>
+                                    <TableCell className="text-center">{result.emoji} {result.name}</TableCell>
+                                    <TableCell>{result.wonMatches}</TableCell>
 
-                            </TableRow>
-                        ))}
+                                </TableRow>
+                            ))}
                         </Suspense>
                     </TableBody>
                 </Table>

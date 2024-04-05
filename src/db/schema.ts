@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
-import { date, datetime, float, int, mysqlEnum, mysqlTable, serial, text } from "drizzle-orm/mysql-core";
+
+import {pgTable ,timestamp, integer, pgEnum, serial, text, real } from "drizzle-orm/pg-core"
 
 /* 
 
@@ -7,7 +8,7 @@ Users are not in implementation scope for now, but can be implemented later.
 Currently the plan is, to have one default user, which is used to create all player entries.
 
 */
-export const users = mysqlTable("users", {
+export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull()
 });
@@ -15,48 +16,49 @@ export const users = mysqlTable("users", {
 /**
  * Players are the actual players.
  */
-export const players = mysqlTable("players", {
+export const players = pgTable("players", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   emoji: text("emoji"),
-  createdAt: datetime("createdAt").notNull(),
-  createdBy: int("createdBy").notNull(),
-  rating: int("rating"),
-  priority: int("priority").notNull().default(9999),
+  createdAt: timestamp("createdAt").notNull(),
+  createdBy: integer("createdBy").notNull(),
+  rating: integer("rating"),
+  priority: integer("priority").notNull().default(9999),
 
 });
 
-export const ratings = mysqlTable("ratings", {
+export const ratings = pgTable("ratings", {
   id: serial("id").primaryKey(),
-  averageSkill: float("averageSkill").default(25),
-  uncertainty: float("uncertainty").default(8.3),
-  player: int("player").notNull(),
+  averageSkill: real("averageSkill").default(25),
+  uncertainty: real("uncertainty").default(8.3),
+  player: integer("player").notNull(),
 });
 
-export const matches = mysqlTable("matches", {
+export const matches = pgTable("matches", {
   id: serial("id").primaryKey(),
-  createdAt: datetime("createdAt").notNull(), // No auto-date 'cause db-server timezone would be used
-  enteredBy: int("enteredBy").notNull(),
+  createdAt: timestamp("createdAt").notNull(), // No auto-date 'cause db-server timezone would be used
+  enteredBy: integer("enteredBy").notNull(),
+});
+export const wonLostEnum = pgEnum("type", ["WON", "LOST"])
+
+export const playerMatches = pgTable("playerMatches", {
+  id: serial("id").primaryKey(),
+  type: wonLostEnum("type"),
+  match: integer("match").notNull(),
+  player: integer("player").notNull(),
 });
 
-export const playerMatches = mysqlTable("playerMatches", {
+export const monthResult = pgTable("monthResult", {
   id: serial("id").primaryKey(),
-  type: mysqlEnum("type", ["WON", "LOST"]).notNull(),
-  match: int("match").notNull(),
-  player: int("player").notNull(),
-});
-
-export const monthResult = mysqlTable("monthResult", {
-  id: serial("id").primaryKey(),
-  createdAt: date("createdAt").notNull().unique(),
-  enteredBy: int("enteredBy").notNull(),
+  createdAt: timestamp("createdAt").notNull().unique(),
+  enteredBy: integer("enteredBy").notNull(),
 })
 
-export const monthResultPlayers = mysqlTable("monthResultPlayers", {
+export const monthResultPlayers = pgTable("monthResultPlayers", {
   id: serial("id").primaryKey(),
-  monthResult: int("monthResult").notNull(),
-  player: int("player").notNull(),
-  points: int("points").notNull(),
+  monthResult: integer("monthResult").notNull(),
+  player: integer("player").notNull(),
+  points: integer("points").notNull(),
 })
 
 /**
