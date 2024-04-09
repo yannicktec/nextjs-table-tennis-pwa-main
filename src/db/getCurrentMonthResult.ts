@@ -1,5 +1,5 @@
 "use server"
-
+export const dynamic = 'force-dynamic';
 import * as schema from "@/db/schema"
 import { and, count, desc, eq, gt, lt } from "drizzle-orm";
 import { getConnectedDBClient } from "./TableTennisDrizzleClient";
@@ -27,7 +27,7 @@ export const getCurrentMonthResult = async () => {
 
 
 
-    console.log(`Last Month results`, lastMonthResultOrdered)
+   // console.log(`Last Month results`, lastMonthResultOrdered)
 
     const pointsMultiplicationRules = [
         - 0.5,
@@ -69,7 +69,7 @@ export const getCurrentMonthResult = async () => {
         .groupBy(schema.players.id)
         .orderBy(desc(count(schema.playerMatches.id)))
 
-    console.log("matchesInOrder", thisMonthPlayerWins)
+   // console.log("matchesInOrder", thisMonthPlayerWins)
 
     const thisMonthResult = thisMonthPlayerWins.map(player => {
         const offset = offsetPoints.find(({ playerId }) => playerId === player.id)?.offset || 0
