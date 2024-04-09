@@ -1,6 +1,4 @@
 
-import { RDSDataClient } from "@aws-sdk/client-rds-data";
-import { drizzle } from "drizzle-orm/aws-data-api/pg";
 import { and, count, eq, gt, lt } from "drizzle-orm";
 import * as schema from "@/db/schema";
 

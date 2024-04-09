@@ -7,10 +7,6 @@ export default {
   out: "./drizzle",
   driver: "pg",
   dbCredentials: {
-    port: 5432,
-    database: process.env.DATABASE!,
-    host: process.env.DB_HOST!,
-    password: process.env.DB_PASSWORD,
-    user: process.env.DB_USER
-  }
+    connectionString: `postgres://${process.env.DB_USER}:${encodeURIComponent(process.env.DB_PASSWORD!)}@${process.env.DB_HOST}:5432/${process.env.DATABASE}?sslmode=no-verify`,
+  },
 } satisfies Config;
