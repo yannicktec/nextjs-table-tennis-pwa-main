@@ -1,5 +1,5 @@
-"use server"
 export const dynamic = 'force-dynamic';
+
 import * as schema from "@/db/schema"
 import { and, count, desc, eq, gt, lt } from "drizzle-orm";
 import { getConnectedDBClient } from "./TableTennisDrizzleClient";

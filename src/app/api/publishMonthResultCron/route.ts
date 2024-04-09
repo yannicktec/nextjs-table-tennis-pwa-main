@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 
 
 import * as schema from "@/db/schema"
