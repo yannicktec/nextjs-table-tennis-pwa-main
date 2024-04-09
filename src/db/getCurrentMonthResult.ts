@@ -69,7 +69,7 @@ export const getCurrentMonthResult = async () => {
         .groupBy(schema.players.id)
         .orderBy(desc(count(schema.playerMatches.id)))
 
-   // console.log("matchesInOrder", thisMonthPlayerWins)
+   console.log("matchesInOrder", thisMonthPlayerWins)
 
     const thisMonthResult = thisMonthPlayerWins.map(player => {
         const offset = offsetPoints.find(({ playerId }) => playerId === player.id)?.offset || 0
@@ -77,7 +77,7 @@ export const getCurrentMonthResult = async () => {
             ...player,
             wins: player.wins + offset
         }
-    })
-
+    }).sort((a,b)=>b.wins-a.wins)
+    
     return thisMonthResult
 }
