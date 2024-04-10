@@ -1,30 +1,37 @@
-"use server";
-
+"use server"
 
 import { getConnectedDBClient } from "@/db/TableTennisDrizzleClient";
 import * as schema from "@/db/schema";
+import { formDataToObject } from "@/lib/formDataToObject";
 import { revalidatePath } from "next/cache";
+import * as z from "zod"
 
-export default async function addMatch({ winnerId, loserId }: { winnerId: number; loserId: number; }) {
-    if (!winnerId || !loserId) throw new Error("winnerId and loserId are required");
+const inputSchema = z.object({
+    winnerId: z.coerce.number({ required_error: "winnerId is required" }),
+});
+export default async function addMatch(formData: FormData) {
+    "use server"
 
     try {
+        const { winnerId } = inputSchema.parse(formDataToObject(formData))
         // Create a connection to the database
         const db = await getConnectedDBClient()
-        const date = new Date();
+        console.log("got DB Connection")
+
         // Insert the match and the playerMatches as a transaction to ensure consistency
         await db.transaction(async tx => {
             const results = await tx.insert(schema.matches).values({
                 createdAt: new Date(),
                 enteredBy: 1,
             }).returning({ id: schema.matches.id });
-
+            console.log("inserted new match:", results)
             const matchId = results[0].id
-            await tx.insert(schema.playerMatches).values({
+            const playermatchResult = await tx.insert(schema.playerMatches).values({
                 type: "WON",
                 match: matchId,
                 player: winnerId,
             }).execute();
+            console.log("inserted new playermatch:", playermatchResult)
         })
 
         revalidatePath("/game")

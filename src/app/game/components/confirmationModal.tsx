@@ -1,3 +1,4 @@
+"use client"
 import React from 'react';
 
 interface ConfirmationModalProps {
@@ -8,6 +9,7 @@ interface ConfirmationModalProps {
 }
 
 export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ isOpen, onClose, onConfirm, playerName }) => {
+
   if (!isOpen) return null;
 
   return (

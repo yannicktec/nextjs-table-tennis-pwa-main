@@ -1,4 +1,5 @@
-"use server"
+export const dynamic = 'force-dynamic';
+
 import PlayerGrid from "./components/playerGrid";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";

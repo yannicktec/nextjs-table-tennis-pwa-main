@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import EmojiPicker from "emoji-picker-react"
 import { addPlayer } from "../actions/addPlayer"
+import { error } from "console"
+import { useToast } from "@/components/ui/use-toast"
 
 
 
@@ -19,6 +21,7 @@ export default function NewPlayerForm() {
     const [name, setName] = useState("")
 
 
+    const { toast } = useToast();
 
     const onFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -26,11 +29,12 @@ export default function NewPlayerForm() {
         formData.append('name', name)
         formData.append('emoji', emoji)
 
-        addPlayer(formData)
+        addPlayer(formData).catch(error => {
+            toast({ title: "Fehler!", description: `${error}`, variant: "destructive" })
+        })
     }
 
-    const buttonDisabled = !name || !emoji || pending
-
+    const buttonDisabled = !name || !emoji
     return (
         <form onSubmit={onFormSubmit} className="flex flex-col justify-between mt-8 w-full h-full max-w-xl max-h-64  space-y-2">
 
@@ -49,7 +53,7 @@ export default function NewPlayerForm() {
                     onEmojiClick={(emojiData) => setEmoji(emojiData.emoji)} />
             </div>
             <Button type='submit' disabled={buttonDisabled} className="mt-12">
-                {!!name && !!emoji && <>&quot;{name} {emoji}&quot;</>}hinzufügen
+                {pending ? <>lade...</> : !!name && !!emoji && <>&quot;{name} {emoji}&quot; hinzufügen</>}
             </Button>
             {buttonDisabled && <p className="text-red-500">Bitte fülle alle Felder aus</p>}
 

@@ -7,6 +7,7 @@ import PlayerTile from "./playerTile";
 import { ToastAction } from "@radix-ui/react-toast";
 import { useToast } from "@/components/ui/use-toast";
 import { ConfirmationModal } from "./confirmationModal";
+import { Input } from "@/components/ui/input";
 
 export interface Player {
   id: number;
@@ -20,9 +21,12 @@ interface PlayerGridProps {
 }
 
 export default function PlayerGrid({ players }: Readonly<PlayerGridProps>) {
+  "use client"
   const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+
+  const [filter, setFilter] = useState("")
 
   const handlePlayerClick = (player: Player) => {
     setSelectedPlayer(player);
@@ -33,33 +37,42 @@ export default function PlayerGrid({ players }: Readonly<PlayerGridProps>) {
 
   const handleConfirm = () => {
     if (selectedPlayer) {
-      console.log(selectedPlayer.id, " wurde ausgewählt");
-      addMatch({ winnerId: selectedPlayer.id, loserId: 1 }).then(() => {
+      const formData = new FormData()
+      formData.append("winnerId", selectedPlayer.id.toString())
+      console.log("sending Formdata:", formData.keys().next().value, formData.entries().next().value)
+
+      addMatch(formData).then(() => {
         toast({ title: "Match hinzugefügt", duration: 5000, description: ` ${selectedPlayer.name} wurde als Sieger eintragen`, variant: "default" })
         setSelectedPlayer(null);
         setIsModalOpen(false);
       }).catch((error) => {
         toast({
           title: "Fehler!",
-          description: `Wer hat denn diese Scheiße programmiert?`,
+          description: `${error}`,
           action: <ToastAction altText="Erneut veruschen"><button onClick={handleConfirm}>Erneut versuchen</button></ToastAction>
         })
+
       });
     }
 
   };
 
   return (
-    <div className="flex justify-center ">
+    <div className="flex justify-center flex-col gap-3 p-3 ">
+      <Input type='text' name='filter' placeholder="Spieler suchen..."  required value={filter} onChange={(e) => setFilter(e.target.value)} />
+
       <div className="flex flex-wrap gap-10 justify-center">
-        {players.toSorted((a, b) => b.priority - a.priority).map((player) => (
-          <PlayerTile
-            key={player.id}
-            name={player.name}
-            emoji={player.emoji || "👾"}
-            onClick={() => handlePlayerClick(player)}
-          />
-        ))}
+        {players.
+          filter(player => player.name.includes(filter))
+          .toSorted((a, b) => a.priority - b.priority)
+          .map((player) => (
+            <PlayerTile
+              key={player.id}
+              name={player.name}
+              emoji={player.emoji || "👾"}
+              onClick={() => handlePlayerClick(player)}
+            />
+          ))}
       </div>
       {selectedPlayer && (
         <ConfirmationModal

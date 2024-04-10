@@ -1,10 +1,12 @@
 "use server"
+
 import "dotenv/config";
 
 import * as schema from "@/db/schema";
 import * as z from "zod";
 import { redirect } from "next/navigation";
 import { getConnectedDBClient } from "@/db/TableTennisDrizzleClient";
+import { formDataToObject } from "@/lib/formDataToObject";
 
 const inputSchema = z.object({
     name: z.string({ required_error: "Name is required" }),
@@ -12,10 +14,16 @@ const inputSchema = z.object({
 });
 
 export async function addPlayer(formData: FormData) {
-    const { name, emoji } = inputSchema.parse({ name: formData.get("name"), emoji: formData.get("emoji") });
-    
+    const { name, emoji } = inputSchema.parse(formDataToObject(formData));
+
     const db = await getConnectedDBClient()
-    
+
+    const players = await db.query.players.findMany()
+
+    if (players.some(player => player.name === name && player.emoji === emoji)) {
+        throw new Error(`Player ${name} ${emoji} already exists! Choose a different name or emoji!`)
+    }
+
     await db.insert(schema.players).values({
         name: name,
         emoji: emoji,
