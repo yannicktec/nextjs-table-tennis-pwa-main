@@ -1,4 +1,3 @@
-"use server"
 export const dynamic = 'force-dynamic';
 
 import { and, count, eq, gt, lt } from "drizzle-orm";
