@@ -8,10 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import EmojiPicker from "emoji-picker-react"
 import { addPlayer } from "../actions/addPlayer"
-import { error } from "console"
 import { useToast } from "@/components/ui/use-toast"
-
-
 
 export default function NewPlayerForm() {
 
@@ -19,8 +16,7 @@ export default function NewPlayerForm() {
 
     const [emoji, setEmoji] = useState("")
     const [name, setName] = useState("")
-
-
+    
     const { toast } = useToast();
 
     const onFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

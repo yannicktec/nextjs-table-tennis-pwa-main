@@ -1,10 +1,11 @@
 export const dynamic = 'force-dynamic';
 import Link from "next/link";
-import { getCurrentMonthResult } from "@/db/getCurrentMonthResult";
+import { getMonthResult } from "@/db/queries/getMonthResult";
+
 
 
 export default async function ScoreBoard() {
-  const thisMonthResult = await getCurrentMonthResult()
+  const thisMonthResult = await getMonthResult(new Date(2024,4,3))
 
   const firstThreePlayers = thisMonthResult.slice(0, 3);
   const restOfPlayers = thisMonthResult.slice(3);
