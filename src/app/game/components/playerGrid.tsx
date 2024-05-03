@@ -124,7 +124,7 @@ export default function PlayerGrid(props: Readonly<PlayerGridProps>) {
 
       <div className="flex flex-wrap gap-10 justify-center">
         {players
-          .filter((player) => player.name.includes(filter))
+          .filter((player) => player.name.toLowerCase().includes(filter.toLowerCase()))
           .toSorted((a, b) => a.priority - b.priority)
           .map((player) => (
             <PlayerTile

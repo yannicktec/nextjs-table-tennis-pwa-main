@@ -20,7 +20,6 @@ export async function getConnectedDBClient() {
 
     await client.connect();
     const db = drizzle(client, { schema });
-
-
+ 
     return db;
 }

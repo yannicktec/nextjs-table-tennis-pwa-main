@@ -5,7 +5,7 @@ import { getMonthResult } from "@/db/queries/getMonthResult";
 
 
 export default async function ScoreBoard() {
-  const thisMonthResult = await getMonthResult(new Date(2024,4,3))
+  const thisMonthResult = await getMonthResult(new Date())
 
   const firstThreePlayers = thisMonthResult.slice(0, 3);
   const restOfPlayers = thisMonthResult.slice(3);
