@@ -7,13 +7,15 @@ import { revalidatePath } from "next/cache";
 import * as z from "zod"
 
 const inputSchema = z.object({
-    winnerId: z.coerce.number({ required_error: "winnerId is required" }),
+    winnerId1: z.coerce.number({ required_error: "winnerId is required" }),
+    winnerId2: z.coerce.number({ required_error: "winnerId is required" }).optional(),
 });
 export default async function addMatch(formData: FormData) {
     "use server"
 
     try {
-        const { winnerId } = inputSchema.parse(formDataToObject(formData))
+        const { winnerId1, winnerId2 } = inputSchema.parse(formDataToObject(formData))
+
         // Create a connection to the database
         const db = await getConnectedDBClient()
         console.log("got DB Connection")
@@ -29,9 +31,18 @@ export default async function addMatch(formData: FormData) {
             const playermatchResult = await tx.insert(schema.playerMatches).values({
                 type: "WON",
                 match: matchId,
-                player: winnerId,
+                player: winnerId1,
             }).execute();
             console.log("inserted new playermatch:", playermatchResult)
+            if(winnerId2){
+                const playermatchResult2 = await tx.insert(schema.playerMatches).values({
+                    type: "WON",
+                    match: matchId,
+                    player: winnerId2,
+                }).execute();
+                console.log("inserted new playermatch:", playermatchResult2)
+            }
+            
         })
 
         revalidatePath("/game")

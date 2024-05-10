@@ -21,7 +21,7 @@ export async function addPlayer(formData: FormData) {
     const players = await db.query.players.findMany()
 
     if (players.some(player => player.name === name && player.emoji === emoji)) {
-        throw new Error(`Player ${name} ${emoji} already exists! Choose a different name or emoji!`)
+        console.log("hier geht er net rein")
     }
 
     await db.insert(schema.players).values({
