@@ -10,7 +10,15 @@ export default {
   },
   stacks(app) {
     app.stack(function Site({ stack }) {
-      const site = new NextjsSite(stack, "site");
+      const site = new NextjsSite(stack, "site", {
+        customDomain: {
+          domainName:
+            stack.stage === "prod"
+              ? "tt-crew.app"
+              : `${stack.stage}.tt-crew.app`,
+          hostedZone: "tt-crew.app",
+        },
+      });
 
       stack.addOutputs({
         SiteUrl: site.url,

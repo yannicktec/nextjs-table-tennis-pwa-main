@@ -45,7 +45,7 @@ export const getMonthResult = async (date: Date) => {
       eq(schema.players.id, schema.monthResultPlayers.player)
     )
     .orderBy(desc(schema.monthResultPlayers.points));
-  console.log(`lastMonthResultOrdered`, lastMonthResultOrdered.map(({name, playerId, points})=>({id: playerId, name , points})));
+  //console.log(`lastMonthResultOrdered`, lastMonthResultOrdered.map(({name, playerId, points})=>({id: playerId, name , points})));
   const pointsMultiplicationRules = [
     -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0, 0, 0, 0,
   ] as const;
@@ -57,7 +57,7 @@ export const getMonthResult = async (date: Date) => {
     }
   );
 
-  console.log(`offsetPoints`, offsetPoints);
+  //console.log(`offsetPoints`, offsetPoints);
   const thisMonthPlayerWins = await db
     .select({
       id: schema.players.id,
@@ -81,7 +81,7 @@ export const getMonthResult = async (date: Date) => {
     .groupBy(schema.players.id)
     .orderBy(desc(count(schema.playerMatches.id)));
 
-  console.log("matchesInOrder", thisMonthPlayerWins);
+  //console.log("matchesInOrder", thisMonthPlayerWins);
 
   const thisMonthResult = thisMonthPlayerWins
     .map((player) => {

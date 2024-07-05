@@ -8,6 +8,7 @@ export default function Home() {
       <h1 className="text-4xl font-bold mb-6 text-center text-gray-200">
         TT Crew
       </h1>
+     
       <div className="flex flex-col items-center space-y-4">
         <Button asChild size="lg" className="w-full">
           <Link href="/game" >🏓 Spiel eintragen</Link>
