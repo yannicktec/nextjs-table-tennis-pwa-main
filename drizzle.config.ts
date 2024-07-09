@@ -1,12 +1,13 @@
 import type { Config } from "drizzle-kit";
-import * as dotenv from "dotenv";
-dotenv.config();
+import { Config as SST_Config } from "sst/node/config";
 
 export default {
   schema: "./src/db/schema.ts",
   out: "./drizzle",
   driver: "pg",
   dbCredentials: {
-    connectionString: `postgres://${process.env.DB_USER}:${encodeURIComponent(process.env.DB_PASSWORD!)}@${process.env.DB_HOST}:5432/${process.env.DATABASE}?sslmode=no-verify`,
+    connectionString: `postgres://${SST_Config.DB_USER}:${encodeURIComponent(
+      SST_Config.DB_PASSWORD!
+    )}@${SST_Config.DB_HOST}:5432/${SST_Config.DATABASE}?sslmode=no-verify`,
   },
 } satisfies Config;
