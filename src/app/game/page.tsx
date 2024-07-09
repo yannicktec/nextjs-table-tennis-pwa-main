@@ -8,16 +8,17 @@ import { ChevronLeft } from "lucide-react";
 import { getConnectedDBClient } from "@/db/TableTennisDrizzleClient";
 import { Suspense } from "react";
 
+type Player = {
+  id: number;
+  name: string;
+  emoji: string | null;
+  createdAt: Date;
+  createdBy: number;
+  rating: number | null;
+  priority: number;
+};
 export default async function Game() {
-  type Player = {
-    id: number;
-    name: string;
-    emoji: string | null;
-    createdAt: Date;
-    createdBy: number;
-    rating: number | null;
-    priority: number;
-  };
+  
   let players: Player[] | undefined = undefined;
   let error = undefined;
   try {
