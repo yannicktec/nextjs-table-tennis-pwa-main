@@ -5,7 +5,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 
-import { getConnectedDBClient } from "@/db/TableTennisDrizzleClient";
+import {
+  getConnectedDBClient,
+  getDBClient,
+} from "@/db/TableTennisDrizzleClient";
 import { Suspense } from "react";
 
 type Player = {
@@ -18,16 +21,10 @@ type Player = {
   priority: number;
 };
 export default async function Game() {
-  
-  let players: Player[] | undefined = undefined;
-  let error = undefined;
-  try {
-    const db = await getConnectedDBClient();
-    players = await db.query.players.findMany();
-    
-  } catch (e) {
-    console.error(e);
-  }
+  const { connect, disconnect } = await getDBClient();
+  const db = await connect();
+  const players = await db.query.players.findMany();
+  disconnect();
 
   return (
     <main className="h-screen w-screen p-4 bg-gray-100 ">

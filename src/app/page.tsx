@@ -19,7 +19,9 @@ export default function Home() {
         <Button asChild variant="secondary" className="w-full">
           <Link href="/scoreboard" >Leaderboard</Link>
         </Button>
-
+        <Button asChild variant="secondary" className="w-full">
+          <Link href="/offline" >Offline Stats</Link>
+        </Button>
       </div>
     </div>
   );

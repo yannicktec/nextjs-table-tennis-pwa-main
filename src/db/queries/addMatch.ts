@@ -2,17 +2,19 @@
 import * as Sentry from "@sentry/nextjs";
 import * as schema from "@/db/schema";
 import * as z from "zod";
-import { getConnectedDBClient } from "@/db/TableTennisDrizzleClient";
+import { getDBClient } from "@/db/TableTennisDrizzleClient";
 import { formDataToObject } from "@/lib/formDataToObject";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 const inputSchema = z.object({
-  winnerId1: z.coerce.number({ required_error: "winnerId is required" }),
-  winnerId2: z.coerce
-    .number({ required_error: "winnerId is required" })
+  winnerIds: z.array(
+    z.coerce.number({ required_error: "winnerId is required" })
+  ),
+  looserIds: z
+    .array(z.coerce.number({ required_error: "winnerId is required" }))
     .optional(),
-  timestamp: z.coerce.date().optional(),
+  timestamp: z.date().optional(),
 });
 
 export default async function addMatch(formData: FormData) {
@@ -24,46 +26,51 @@ export default async function addMatch(formData: FormData) {
       recordResponse: true, // Optionally record the server action response
     },
     async () => {
-      throw new Error();
+      const { connect, disconnect } = await getDBClient();
+
+      const db = await connect();
       try {
-        const { winnerId1, winnerId2 } = inputSchema.parse(
+        const { winnerIds, looserIds, timestamp } = inputSchema.parse(
           formDataToObject(formData)
         );
-
-        // Create a connection to the database
-        const db = await getConnectedDBClient();
-        console.log("got DB Connection");
 
         // Insert the match and the playerMatches as a transaction to ensure consistency
         await db.transaction(async (tx) => {
           const results = await tx
             .insert(schema.matches)
             .values({
-              createdAt: new Date(),
+              createdAt: timestamp || new Date(),
               enteredBy: 1,
             })
             .returning({ id: schema.matches.id });
           console.log("inserted new match:", results);
+
           const matchId = results[0].id;
-          const playermatchResult = await tx
-            .insert(schema.playerMatches)
-            .values({
-              type: "WON",
-              match: matchId,
-              player: winnerId1,
-            })
-            .execute();
-          console.log("inserted new playermatch:", playermatchResult);
-          if (winnerId2) {
-            const playermatchResult2 = await tx
+
+          winnerIds.forEach(async (winnerId) => {
+            const playermatchResult = await tx
               .insert(schema.playerMatches)
               .values({
                 type: "WON",
                 match: matchId,
-                player: winnerId2,
+                player: winnerId,
               })
               .execute();
-            console.log("inserted new playermatch:", playermatchResult2);
+            console.log("inserted new playermatch:", playermatchResult);
+          });
+          
+          if (looserIds) {
+            looserIds.forEach(async (looserId) => {
+              const playermatchResult = await tx
+                .insert(schema.playerMatches)
+                .values({
+                  type: "LOST",
+                  match: matchId,
+                  player: looserId,
+                })
+                .execute();
+              console.log("inserted new playermatch:", playermatchResult);
+            });
           }
         });
 
@@ -71,6 +78,8 @@ export default async function addMatch(formData: FormData) {
       } catch (error) {
         console.error(error);
         throw new Error("Could not add match");
+      } finally {
+        await disconnect();
       }
     }
   );
